@@ -1,0 +1,90 @@
+import { useRef, useEffect, useState } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Sphere, useTexture } from '@react-three/drei';
+import * as THREE from 'three';
+import { useHandTracking } from '../hooks/useHandTracking';
+
+function CelestialSphere({ session, onGesture }) {
+  const meshRef = useRef();
+  const [aladinTexture, setAladinTexture] = useState(null);
+  const { gestures } = useHandTracking(session);
+
+  useEffect(() => {
+    // Create Aladin Lite instance for texture generation
+    const createAladinTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 2048;
+      canvas.height = 1024;
+      
+      // Initialize Aladin Lite
+      if (window.A) {
+        window.A.init.then(() => {
+          const aladin = window.A.aladin(canvas, {
+            survey: "P/DSS2/color",
+            fov: 180, // Full sphere coverage
+            projection: "SIN", // Sinusoidal projection for sphere mapping
+            showReticle: false,
+            showFullscreenControl: false,
+            showZoomControl: false,
+            showLayersControl: false,
+            showGotoControl: false,
+            showShareControl: false
+          });
+          
+          // Convert canvas to texture
+          const texture = new THREE.Texture(canvas);
+          texture.needsUpdate = true;
+          setAladinTexture(texture);
+        });
+      }
+    };
+
+    createAladinTexture();
+  }, []);
+
+  useFrame((state, delta) => {
+    if (meshRef.current && gestures) {
+      // Handle gesture-based rotation
+      if (gestures.left === 'pointing' && gestures.right === 'pointing') {
+        // Both hands pointing - rotate based on hand positions
+        // This is a simplified implementation
+        meshRef.current.rotation.y += delta * 0.5;
+      } else if (gestures.left === 'fist' || gestures.right === 'fist') {
+        // Fist gesture - zoom in/out
+        const scale = meshRef.current.scale.x;
+        if (gestures.left === 'fist') {
+          meshRef.current.scale.setScalar(Math.max(0.5, scale - delta));
+        }
+        if (gestures.right === 'fist') {
+          meshRef.current.scale.setScalar(Math.min(2.0, scale + delta));
+        }
+      }
+    }
+  });
+
+  return (
+    <Sphere ref={meshRef} args={[5, 64, 64]}>
+      <meshStandardMaterial 
+        map={aladinTexture}
+        side={2} // DoubleSide for inside-out viewing
+      />
+    </Sphere>
+  );
+}
+
+export default function SphericalAladin({ session }) {
+  return (
+    <Canvas
+      camera={{ position: [0, 0, 0], fov: 75 }}
+      gl={{ 
+        antialias: true,
+        alpha: true,
+        xr: true
+      }}
+    >
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[10, 10, 5]} intensity={1} />
+      <CelestialSphere session={session} />
+    </Canvas>
+  );
+}

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebXR Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        #log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebXR Compatibility Test</h1>
+    
+    <div class="test-section">
+        <h2>Browser Information</h2>
+        <div id="browser-info"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>WebXR Support Check</h2>
+        <div id="webxr-status"></div>
+        <button onclick="checkWebXRSupport()">Check WebXR Support</button>
+    </div>
+
+    <div class="test-section">
+        <h2>WebXR Session Test</h2>
+        <div id="session-status"></div>
+        <button id="start-session-btn" onclick="startWebXRSession()" disabled>Start WebXR Session</button>
+        <button id="end-session-btn" onclick="endWebXRSession()" disabled>End Session</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Log</h2>
+        <div id="log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        let currentSession = null;
+        const log = document.getElementById('log');
+        
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logEntry.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            log.appendChild(logEntry);
+            log.scrollTop = log.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            log.innerHTML = '';
+        }
+
+        function updateBrowserInfo() {
+            const info = document.getElementById('browser-info');
+            info.innerHTML = `
+                <p><strong>User Agent:</strong> ${navigator.userAgent}</p>
+                <p><strong>Platform:</strong> ${navigator.platform}</p>
+                <p><strong>Language:</strong> ${navigator.language}</p>
+                <p><strong>Secure Context:</strong> ${window.isSecureContext ? 'Yes' : 'No'}</p>
+                <p><strong>Protocol:</strong> ${window.location.protocol}</p>
+            `;
+        }
+
+        function checkWebXRSupport() {
+            const status = document.getElementById('webxr-status');
+            const startBtn = document.getElementById('start-session-btn');
+            
+            addLog('Checking WebXR support...');
+            
+            if (!navigator.xr) {
+                status.innerHTML = '<div class="status error">WebXR is not supported in this browser</div>';
+                addLog('WebXR not supported - navigator.xr is undefined', 'error');
+                return;
+            }
+
+            addLog('navigator.xr is available', 'success');
+
+            navigator.xr.isSessionSupported('immersive-vr')
+                .then(supported => {
+                    if (supported) {
+                        status.innerHTML = '<div class="status success">WebXR immersive-vr is supported!</div>';
+                        startBtn.disabled = false;
+                        addLog('WebXR immersive-vr is supported', 'success');
+                        
+                        // Check hand tracking
+                        return navigator.xr.isSessionSupported('immersive-vr', {
+                            requiredFeatures: ['hand-tracking']
+                        });
+                    } else {
+                        status.innerHTML = '<div class="status error">WebXR immersive-vr is not supported</div>';
+                        addLog('WebXR immersive-vr is not supported', 'error');
+                    }
+                })
+                .then(handSupported => {
+                    if (handSupported !== undefined) {
+                        if (handSupported) {
+                            addLog('Hand tracking is supported', 'success');
+                        } else {
+                            addLog('Hand tracking is not supported', 'warning');
+                        }
+                    }
+                })
+                .catch(error => {
+                    status.innerHTML = '<div class="status error">Error checking WebXR support: ' + error.message + '</div>';
+                    addLog('Error checking WebXR support: ' + error.message, 'error');
+                });
+        }
+
+        async function startWebXRSession() {
+            const status = document.getElementById('session-status');
+            const startBtn = document.getElementById('start-session-btn');
+            const endBtn = document.getElementById('end-session-btn');
+            
+            try {
+                addLog('Requesting WebXR session...');
+                
+                const session = await navigator.xr.requestSession('immersive-vr', {
+                    optionalFeatures: ['hand-tracking']
+                });
+                
+                currentSession = session;
+                status.innerHTML = '<div class="status success">WebXR session started successfully!</div>';
+                startBtn.disabled = true;
+                endBtn.disabled = false;
+                addLog('WebXR session started successfully', 'success');
+                
+                session.addEventListener('end', () => {
+                    currentSession = null;
+                    status.innerHTML = '<div class="status warning">WebXR session ended</div>';
+                    startBtn.disabled = false;
+                    endBtn.disabled = true;
+                    addLog('WebXR session ended', 'warning');
+                });
+                
+            } catch (error) {
+                status.innerHTML = '<div class="status error">Failed to start WebXR session: ' + error.message + '</div>';
+                addLog('Failed to start WebXR session: ' + error.message, 'error');
+            }
+        }
+
+        async function endWebXRSession() {
+            if (currentSession) {
+                try {
+                    await currentSession.end();
+                    addLog('WebXR session ended manually', 'success');
+                } catch (error) {
+                    addLog('Error ending WebXR session: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            updateBrowserInfo();
+            checkWebXRSupport();
+        };
+    </script>
+</body>
+</html>
