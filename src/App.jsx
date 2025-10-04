@@ -10,6 +10,7 @@ function App() {
       showSimbadPointerControl={true}
       showReticle={false}
       fov={60}
+      realFullscreen={true}
     />
   )
 }
