@@ -7,6 +7,8 @@ function App() {
       projection={"STG"}
       survey={"CDS/P/Mellinger/color"}
       fullScreen={true}
+      showSimbadPointerControl={true}
+      showReticle={false}
       fov={60}
     />
   )
