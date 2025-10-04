@@ -21,6 +21,7 @@ export default function Aladin() {
           window.A.init.then(() => {
             window.A.aladin(aladinRef.current, {
               survey: "P/DSS2/color",
+              fullScreen: true,
               fov: 60,
             });
           });
@@ -34,6 +35,7 @@ export default function Aladin() {
         window.A.init.then(() => {
           window.A.aladin(aladinRef.current, {
             survey: "P/DSS2/color",
+            fullScreen: true,
             fov: 60,
           });
         });
