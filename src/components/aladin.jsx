@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import useWindowDimensions from "./windowDimensions";
 
-export default function Aladin() {
+export default function Aladin(props) {
   const aladinRef = useRef(null);
   const { height, width } = useWindowDimensions();
 
@@ -19,11 +19,7 @@ export default function Aladin() {
       script.onload = () => {
         if (window.A) {
           window.A.init.then(() => {
-            window.A.aladin(aladinRef.current, {
-              survey: "P/DSS2/color",
-              fullScreen: true,
-              fov: 60,
-            });
+            window.A.aladin(aladinRef.current, props);
           });
         }
       };
@@ -33,15 +29,11 @@ export default function Aladin() {
       // If already loaded, just init
       if (window.A) {
         window.A.init.then(() => {
-          window.A.aladin(aladinRef.current, {
-            survey: "P/DSS2/color",
-            fullScreen: true,
-            fov: 60,
-          });
+          window.A.aladin(aladinRef.current, props);
         });
       }
     }
-  }, []);
+  }, [props]);
 
   return (
     <div
