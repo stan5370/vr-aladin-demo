@@ -1,5 +1,8 @@
 import { useEffect, useRef } from "react";
 
+// const CLICK_MOVE_TOLERANCE_PX = 6;   // how much movement counts as a drag
+// const CLICK_TIME_TOLERANCE_MS = 600; // optional guard against long drags/holds
+
 function pad(n, w = 2) { return String(Math.floor(Math.abs(n))).padStart(w, "0"); }
 function toHMS(raDeg) {
   const h = raDeg / 15;
@@ -8,6 +11,7 @@ function toHMS(raDeg) {
   const ss = ((h - hh) * 3600 - mm * 60);
   return `${pad(hh)} ${pad(mm)} ${ss.toFixed(2).padStart(5, "0")}`;
 }
+
 function toDMS(decDeg) {
   const sign = decDeg >= 0 ? "+" : "-";
   const a = Math.abs(decDeg);
@@ -68,7 +72,13 @@ export default function Aladin() {
 
         const raSexa = toHMS(raDeg);
         const decSexa = toDMS(decDeg);
-
+        
+        aladin.addStatusBarMessage({
+          id: "loadingMsg",
+          duration: 10000,
+          type: 'loading',
+          message: 'Clicked: ' + raSexa + ' ' + decSexa
+        });
         console.log("Clicked sky coords:", raSexa, decSexa);
 
         try {
@@ -78,13 +88,28 @@ export default function Aladin() {
 
           const res = await fetch(url);
           const description = await res.text();
+
           console.log("namesToDesc:", description);
+        
+          aladin.removeStatusBarMessage("message");
+          aladin.removeStatusBarMessage("loadingMsg");
+
+          const formatted = description.replace(/(.{100})/g, "$1<br>");
+
+          aladin.addStatusBarMessage({
+            id: "message",
+            duration: 10000,
+            type: 'info',
+            message: formatted
+          })
+
+
         } catch (err) {
           console.error("namesToDesc fetch failed:", err);
         }
       };
 
-      container.addEventListener("click", handleClick);
+      container.addEventListener("contextmenu", handleClick);
       aladinRef.current = { aladin, handleClick, container };
     };
 
