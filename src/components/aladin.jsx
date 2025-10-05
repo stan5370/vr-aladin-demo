@@ -110,7 +110,7 @@ export default function Aladin() {
         );
 
       /** Right-click to query Elastic with the clicked RA/Dec */
-      const handleContextMenu = async (e) => {
+      const handleClick = async (e) => {
         e.preventDefault();
 
         if (isOverUi(e.target)) return;
