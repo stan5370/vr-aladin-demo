@@ -16,20 +16,20 @@ function App() {
                     height: "100vh",
                 }}
             >
-                <PerspectiveCamera makeDefault position={[0, 1.6, 2]} fov={60} />
-                <Environment preset="warehouse" />
-                <mesh>
-                    <sphereGeometry args={[5000, 16, 16, Math.PI / 2, Math.PI * 2, 0, Math.PI]} />
-                    <meshStandardMaterial color="green" />
-                </mesh>
-                <mesh rotation-x={-Math.PI / 2}>
-                    <planeGeometry args={[6, 6]} />
-                    <meshStandardMaterial color="white" />
-                    <Html>
-                        <Aladin />
-                    </Html>
-                </mesh>
                 <XR store={store}>
+                    <PerspectiveCamera makeDefault position={[0, 1.6, 2]} fov={60} />
+                    <Environment preset="warehouse" />
+                    <mesh>
+                        <sphereGeometry args={[5000, 16, 16, Math.PI / 2, Math.PI * 2, 0, Math.PI]} />
+                        <meshStandardMaterial color="green" />
+                    </mesh>
+                    <mesh rotation-x={-Math.PI / 2}>
+                        <planeGeometry args={[6, 6]} />
+                        <meshStandardMaterial color="white" />
+                        <Html>
+                            <Aladin />
+                        </Html>
+                    </mesh>
                 </XR>
             </Canvas>
         </>
