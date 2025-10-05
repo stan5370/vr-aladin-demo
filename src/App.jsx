@@ -45,22 +45,28 @@ function AladinBackground({ aladinProps }) {
     }
   }, [aladinProps])
 
-  // Keep plane fixed relative to camera
   useFrame(() => {
-    if (meshRef.current) {
-      const distance = 1
-      const dir = new THREE.Vector3()
-      camera.getWorldDirection(dir)
-      meshRef.current.position.copy(camera.position).add(dir.multiplyScalar(distance))
-      meshRef.current.quaternion.copy(camera.quaternion)
-    }
+    if (!meshRef.current) return
+
+    // Keep plane in front of camera
+    const distance = 5 // far enough to avoid near-plane clipping
+    const dir = new THREE.Vector3()
+    camera.getWorldDirection(dir)
+    meshRef.current.position.copy(camera.position).add(dir.multiplyScalar(distance))
+    meshRef.current.quaternion.copy(camera.quaternion)
+
+    // Scale plane to match camera FOV
+    const fovRad = (camera.fov * Math.PI) / 180
+    const height = 2 * distance * Math.tan(fovRad / 2)
+    const width = height * camera.aspect
+    meshRef.current.scale.set(width, height, 1)
   })
 
   if (!texture) return null
 
   return (
     <mesh ref={meshRef}>
-      <planeGeometry args={[2, 2]} />
+      <planeGeometry args={[1, 1]} />
       <meshBasicMaterial map={texture} toneMapped={false} />
     </mesh>
   )
