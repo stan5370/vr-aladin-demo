@@ -15,7 +15,7 @@ export default function Aladin() {
                 fullScreen: true,
                 showSimbadPointerControl: true,
                 showReticle: false,
-                fov: 105,
+                fov: 120,
             });
             aladinRef.current = window.aladin;
         };
