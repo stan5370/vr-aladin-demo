@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import useWindowDimensions from "./windowDimensions";
+import { Html } from '@react-three/drei'
 
 export default function Aladin(props) {
   const aladinRef = useRef(null);
@@ -14,8 +15,6 @@ export default function Aladin(props) {
         },
       });
       const aladin = window.A.aladin(aladinRef.current, props);
-
-      // Load HiPS catalogue
 
       // Add catalog to Aladin
       aladin.addCatalog(catalog);
@@ -48,11 +47,9 @@ export default function Aladin(props) {
   }, [props]);
 
   return (
-    <div
-      ref={aladinRef}
-      style={{ width: width, height: height }}
-      id="aladin-lite-div"
-    />
+    <Html>
+      <div id="aladin-lite-div" style={{ width: width, height: height }} />
+    </Html>
   );
 }
 
