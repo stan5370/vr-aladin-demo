@@ -47,7 +47,9 @@ function buildMessages(starName) {
         '- Distance from Earth in Light Years\n\n' +
         '- Distance Units\n' +
         "- Coordinate of the Star in this format '00 00 00' for Right Ascension, '00 00 00' for Declination\n\n" +
-        'Respond in a stringified json that can be parsed in JavaScript' +
+        "- Image URL to a high quality image of the star\n" +
+        "- List out any exoplanets in a list [exoplanet_one, exoplanet_2,...]\n" +
+        'Respond in a stringified json that can be parsed in JavaScript\n' +
         'Do NOT output markdown fences'
     },
     { role: 'user', content: `Star details: ${starName}` }
