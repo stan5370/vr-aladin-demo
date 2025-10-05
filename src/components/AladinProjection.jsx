@@ -28,8 +28,8 @@ export default function AladinDome() {
 
     if (domeRef.current) {
       domeRef.current.material.map = texture;
-      domeRef.current.material.color = new THREE.Color(0.3, 0.3, 0.3);
-      domeRef.current.material.opacity = 100;
+      domeRef.current.material.color = new THREE.Color(0, 0, 0);
+      domeRef.current.material.opacity = 85;
       domeRef.current.material.transparent = true;
       domeRef.current.material.needsUpdate = true;
     }
