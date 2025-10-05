@@ -72,7 +72,7 @@ export default function Aladin() {
         console.log("Clicked sky coords:", raSexa, decSexa);
 
         try {
-          const prefix = "http://localhost:7071/api/";
+          const prefix = "https://purple-smoke-070adf60f.1.azurestaticapps.net/api/";
           const params = new URLSearchParams({ RA: raSexa, Declination: decSexa });
           const url = `${prefix}namesToDesc?${params.toString()}`;
 
