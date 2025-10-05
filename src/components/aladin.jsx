@@ -27,7 +27,7 @@ export default function Aladin() {
                     res = await fetch(url);
                     let description = await res.text();
                     console.log(description);
-                    
+
                     
                 },
             });
