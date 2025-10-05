@@ -46,21 +46,22 @@ function AladinBackground({ aladinProps }) {
   }, [aladinProps])
 
   useFrame(() => {
-    if (!meshRef.current) return
-
+    if (!meshRef.current) return;
+  
     // Keep plane in front of camera
-    const distance = 5 // far enough to avoid near-plane clipping
-    const dir = new THREE.Vector3()
-    camera.getWorldDirection(dir)
-    meshRef.current.position.copy(camera.position).add(dir.multiplyScalar(distance))
-    meshRef.current.quaternion.copy(camera.quaternion)
-
-    // Scale plane to match camera FOV
-    const fovRad = (camera.fov * Math.PI) / 180
-    const height = 2 * distance * Math.tan(fovRad / 2)
-    const width = height * camera.aspect
-    meshRef.current.scale.set(width, height, 1)
-  })
+    const distance = 5; // far enough to avoid near-plane clipping
+    const dir = new THREE.Vector3();
+    camera.getWorldDirection(dir);
+    meshRef.current.position.copy(camera.position).add(dir.multiplyScalar(distance));
+    meshRef.current.quaternion.copy(camera.quaternion);
+  
+    // Instead of scaling, just set plane size to match camera viewport
+    // const viewportHeight = camera.top - camera.bottom || 2; // if using orthographic, top-bottom
+    // const viewportWidth = camera.right - camera.left || 2; // if using orthographic, right-left
+  
+    // For perspective camera, you can just use 1x1 plane
+    meshRef.current.scale.set(1, 1, 1); 
+  });
 
   if (!texture) return null
 
