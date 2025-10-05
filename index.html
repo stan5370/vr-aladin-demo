@@ -13,10 +13,15 @@
                     optionalFeatures: dom-overlay,unbounded;
                     overlayElement: #overlay;">
       <a-camera>
-        <a-entity position="0 0 1">
-          <script type="module" src="/src/main.jsx"></script>
-        </a-entity>
+        <a-cursor color="#FAFAFA"></a-cursor>
       </a-camera>
+      <a-plane position="0 -1 0" rotation="-90 0 0" width="30" height="30"></a-plane>
+
+      <a-entity id="leftHand" hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"></a-entity>
+      <a-entity id="rightHand" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"></a-entity>
+      <a-entity position="0 0 1">
+        <script type="module" src="/src/main.jsx"></script>
+      </a-entity>
     </a-scene>
   </body>
 </html>
