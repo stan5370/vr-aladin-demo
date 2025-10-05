@@ -41,8 +41,7 @@ export default function AladinDome() {
 
   return (
     <mesh ref={domeRef}>
-      {/* Full dome (hemisphere) */}
-      <sphereGeometry args={[500, 64, 64, 0, Math.PI * 2, 0, Math.PI]} />
+      <sphereGeometry args={[5000, 64, 64, 0, Math.PI * 2, 0]} />
       <meshBasicMaterial side={THREE.BackSide} />
     </mesh>
   );

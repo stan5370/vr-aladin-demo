@@ -9,6 +9,7 @@ const store = createXRStore()
 function App() {
   return (
     <>
+      <Aladin />
       <Canvas
         style={{
           position: "fixed",
@@ -26,7 +27,6 @@ function App() {
           </mesh>
         </XR>
       </Canvas>
-      <Aladin />
     </>
   )
 }
