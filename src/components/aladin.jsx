@@ -17,7 +17,7 @@ export default function Aladin() {
             // Create aladin
             const aladin = window.A.aladin('#aladin-lite-div', {
                 target: "18 03 57.94 -28 40 55.0",
-                projection: "STG",
+                projection: "MOL",
                 survey: "CDS/P/Mellinger/color",
                 fullScreen: true,
                 showSimbadPointerControl: true,

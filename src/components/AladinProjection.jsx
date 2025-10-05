@@ -43,7 +43,9 @@ export default function AladinDome() {
   }, [canvas]);
 
   return (
-    <mesh ref={domeRef}>
+    <mesh onClick={(e) => {
+        /* TODO: pass to aladin */
+    }} ref={domeRef}>
       <sphereGeometry args={[1500, 128, 64, 0, Math.PI * 2, 0]} />
       <meshBasicMaterial side={THREE.BackSide} color="black"/>
     </mesh>
