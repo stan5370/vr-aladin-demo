@@ -5,23 +5,9 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>vr-aladin-demo</title>
-    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
   </head>
   <body>
     <div id="root"></div>
-    <a-scene webxr="requiredFeatures: hit-test,local-floor;
-                    optionalFeatures: dom-overlay,unbounded;
-                    overlayElement: #overlay;">
-      <a-camera>
-        <a-cursor color="#FAFAFA"></a-cursor>
-      </a-camera>
-      <a-plane position="0 -1 0" rotation="-90 0 0" width="30" height="30"></a-plane>
-
-      <a-entity id="leftHand" hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"></a-entity>
-      <a-entity id="rightHand" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"></a-entity>
-      <a-entity position="0 0 1">
-        <script type="module" src="/src/main.jsx"></script>
-      </a-entity>
-    </a-scene>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

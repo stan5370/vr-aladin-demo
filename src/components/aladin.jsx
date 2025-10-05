@@ -1,11 +1,27 @@
 import { useEffect, useRef } from "react";
 import useWindowDimensions from "./windowDimensions";
+import { Html } from '@react-three/drei'
 
 export default function Aladin(props) {
   const aladinRef = useRef(null);
   const { height, width } = useWindowDimensions();
 
   useEffect(() => {
+    const loadAladin = () => {
+      // Initialize Aladin Lite
+      const catalog = window.A.catalogHiPS("https://hipscat.cds.unistra.fr/HiPSCatService/Simbad", {
+        onClick: (source) => {
+          console.log("Clicked source:", source);
+        },
+      });
+      const aladin = window.A.aladin(aladinRef.current, props);
+
+      // Add catalog to Aladin
+      aladin.addCatalog(catalog);
+
+      return aladin;
+    };
+
     // Load Aladin script dynamically if not already loaded
     const existingScript = document.getElementById("aladin-script");
 
@@ -18,29 +34,22 @@ export default function Aladin(props) {
 
       script.onload = () => {
         if (window.A) {
-          window.A.init.then(() => {
-            window.A.aladin(aladinRef.current, props);
-          });
+          window.A.init.then(loadAladin);
         }
       };
 
       document.body.appendChild(script);
     } else {
-      // If already loaded, just init
       if (window.A) {
-        window.A.init.then(() => {
-          window.A.aladin(aladinRef.current, props);
-        });
+        window.A.init.then(loadAladin);
       }
     }
   }, [props]);
 
   return (
-    <div
-      ref={aladinRef}
-      style={{ width: width, height: height }}
-      id="aladin-lite-div"
-    />
+    <Html>
+      <div id="aladin-lite-div" style={{ width: width, height: height }} />
+    </Html>
   );
 }
 
