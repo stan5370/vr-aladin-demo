@@ -11,12 +11,8 @@ function AladinBackground({ aladinProps }) {
   const meshRef = useRef()
   const { camera } = useThree()
   const [texture, setTexture] = useState(null)
-  const aladinRef = useRef(null)
-  const initialQuaternion = useRef(new THREE.Quaternion())
 
   useEffect(() => {
-    initialQuaternion.current.copy(camera.quaternion)
-
     // Create a canvas texture
     const canvas = document.createElement('canvas')
     canvas.width = 1024
@@ -26,17 +22,11 @@ function AladinBackground({ aladinProps }) {
 
     // Mount Aladin temporarily to render into canvas
     const container = document.createElement('div')
-    container.style.display = 'none' // hide the DOM element
     document.body.appendChild(container)
     const root = ReactDOM.createRoot(container)
-    root.render(
-      <Aladin
-        ref={aladinRef}
-        {...aladinProps}
-      />
-    )
+    root.render(<Aladin {...aladinProps} />)
 
-    // Update texture continuously
+    // Copy Aladin's internal canvas to our texture continuously
     const updateTexture = () => {
       const aladinCanvas = container.querySelector('canvas')
       if (aladinCanvas) {
@@ -53,32 +43,23 @@ function AladinBackground({ aladinProps }) {
       root.unmount()
       document.body.removeChild(container)
     }
-  }, [aladinProps, camera])
+  }, [aladinProps])
 
   useFrame(() => {
-    if (!meshRef.current || !aladinRef.current) return
+    if (!meshRef.current) return
 
-    // --- Position & scale plane ---
-    const distance = 5
+    // Keep plane in front of camera
+    const distance = 5 // far enough to avoid near-plane clipping
     const dir = new THREE.Vector3()
     camera.getWorldDirection(dir)
     meshRef.current.position.copy(camera.position).add(dir.multiplyScalar(distance))
     meshRef.current.quaternion.copy(camera.quaternion)
 
+    // Scale plane to match camera FOV
     const fovRad = (camera.fov * Math.PI) / 180
     const height = 2 * distance * Math.tan(fovRad / 2)
     const width = height * camera.aspect
     meshRef.current.scale.set(width, height, 1)
-
-    // --- Head inverse tracking for Aladin ---
-    const deltaQuat = camera.quaternion.clone().multiply(initialQuaternion.current.clone().invert())
-    const euler = new THREE.Euler().setFromQuaternion(deltaQuat, 'YXZ')
-
-    const { ra, dec } = aladinRef.current.getRaDec()
-    const newRa = ra - THREE.MathUtils.radToDeg(euler.y) // inverse yaw
-    const newDec = dec + THREE.MathUtils.radToDeg(euler.x) // inverse pitch
-
-    aladinRef.current.gotoRaDec(newRa, newDec)
   })
 
   if (!texture) return null
