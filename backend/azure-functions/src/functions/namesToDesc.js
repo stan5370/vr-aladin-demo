@@ -6,8 +6,7 @@ const { Client } = require('@elastic/elasticsearch');
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*', // replace with 'https://your-react-app.web.app' in prod
   'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Max-Age': '86400'
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 };
 
 const es = new Client({
@@ -31,7 +30,7 @@ function extractTextFromSSE(sse) {
   return out.trim();
 }
 
-function buildMessages(starName) {
+function buildMessages(starCoords) {
   return [
     {
       role: 'system',
@@ -47,12 +46,12 @@ function buildMessages(starName) {
         '- Distance from Earth in Light Years\n\n' +
         '- Distance Units\n' +
         "- Coordinate of the Star in this format '00 00 00' for Right Ascension, '00 00 00' for Declination\n\n" +
-        "- Image URL to a high quality image of the star\n" +
+        "- Encoded image of a high quality rendering of the star; MUST BE REAL IMAGE OR YOU ARE FIRED\n" +
         "- List out any exoplanets in a list [exoplanet_one, exoplanet_2,...]\n" +
         'Respond in a stringified json that can be parsed in JavaScript\n' +
         'Do NOT output markdown fences'
     },
-    { role: 'user', content: `Star details: ${starName}` }
+    { role: 'user', content: `Star coordinates: ${starCoords}` }
   ];
 }
 
@@ -66,8 +65,9 @@ app.http('namesToDesc', {
         return { status: 204, headers: CORS_HEADERS, body: '' };
       }
 
-      const prompt = req.query.get('prompt') || '';
-      if (!prompt) {
+      const ra = req.query.get('RA') || '00 00 00';
+      const dec = req.query.get('Declination') || '+00 00 00';
+      if (!ra) {
         return {
           status: 400,
           headers: { ...CORS_HEADERS, 'Content-Type': 'text/plain' },
@@ -76,7 +76,7 @@ app.http('namesToDesc', {
       }
 
       const modelId = process.env.ELASTIC_LLM_ID || '.rainbow-sprinkles-elastic';
-      const messages = buildMessages(prompt);
+      const messages = buildMessages(ra + " " + dec);
 
       // Streamed chat completion
       const stream = await es.transport.request(

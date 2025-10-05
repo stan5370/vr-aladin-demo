@@ -19,7 +19,7 @@ app.http('coordsToName', {
     const dec = request.query.get('Declination') || '+00 00 00';
     const radius = request.query.get('radius') || 0.05;
 
-    const queryURL = `https://alasky.cds.unistra.fr/cgi/simbad-flat/simbad-quick.py?Ident=${ra}+${dec}&SR=${radius}`;
+    const queryURL = ``;
     const response = await fetch(queryURL);
     const text = await response.text();
 

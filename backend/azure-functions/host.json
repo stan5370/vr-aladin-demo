@@ -8,6 +8,20 @@
       }
     }
   },
+  "extensions": {
+    "http": {
+      "routePrefix": "api",
+      "cors": {
+        "allowedOrigins": [
+          "http://localhost:5173",
+          "http://localhost:3000"
+        ],
+        "allowedMethods": [ "GET", "POST", "OPTIONS" ],
+        "allowedHeaders": [ "Content-Type", "Authorization" ],
+        "supportCredentials": false
+      }
+    }
+  },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[4.*, 5.0.0)"
