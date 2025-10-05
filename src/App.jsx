@@ -1,17 +1,33 @@
+import { Canvas } from '@react-three/fiber'
+import { XR, createXRStore } from '@react-three/xr'
+import { Environment, PerspectiveCamera } from '@react-three/drei'
 import Aladin from './components/aladin'
+import AladinDome from './components/AladinProjection'
+
+const store = createXRStore()
 
 function App() {
   return (
-    <Aladin 
-      target={"18 03 57.94 -28 40 55.0"}
-      projection={"STG"}
-      survey={"CDS/P/Mellinger/color"}
-      fullScreen={true}
-      showSimbadPointerControl={true}
-      showReticle={false}
-      fov={60}
-      realFullscreen={true}
-    />
+    <>
+      <Aladin />
+      <Canvas
+        style={{
+          position: "fixed",
+          width: "100vw",
+          height: "100vh",
+        }}
+      >
+        <XR store={store}>
+          <PerspectiveCamera makeDefault position={[0, 1.6, 0]} fov={75} />
+          <Environment preset="night" />
+          <AladinDome />
+          <mesh rotation-x={-Math.PI / 2}>
+            <circleGeometry args={[2, 32]} transform={[0, -5, 0]} />
+            <meshStandardMaterial transparent={true} opacity={0.5} color="gray" />
+          </mesh>
+        </XR>
+      </Canvas>
+    </>
   )
 }
 
