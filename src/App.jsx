@@ -9,7 +9,9 @@ import Aladin from './components/aladin'
 function App() {
   const aladinRef = useRef();
   return (
+    <>
       <Aladin ref={aladinRef} />
+    </>
   )
 }
 
