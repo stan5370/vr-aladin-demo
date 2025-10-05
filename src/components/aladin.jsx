@@ -17,12 +17,12 @@ export default function Aladin() {
             // Create aladin
             const aladin = window.A.aladin('#aladin-lite-div', {
                 target: "18 03 57.94 -28 40 55.0",
-                projection: "MOL",
+                projection: "STG",
                 survey: "CDS/P/Mellinger/color",
                 fullScreen: true,
                 showSimbadPointerControl: true,
                 showReticle: false,
-                fov: 90,
+                fov: 105,
             });
             aladin.addCatalog(catalog);
             aladinRef.current = aladin;
