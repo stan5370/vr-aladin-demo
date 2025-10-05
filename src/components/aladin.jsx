@@ -82,7 +82,7 @@ export default function Aladin() {
         console.log("Clicked sky coords:", raSexa, decSexa);
 
         try {
-          const prefix = "https://localhost:7071/api/";
+          const prefix = "http://localhost:443/api/";
           const params = new URLSearchParams({ RA: raSexa, Declination: decSexa });
           const url = `${prefix}namesToDesc?${params.toString()}`;
 
@@ -110,6 +110,7 @@ export default function Aladin() {
       };
 
       container.addEventListener("contextmenu", handleClick);
+      container.addEventListener("touchstart", handleClick);
       aladinRef.current = { aladin, handleClick, container };
     };
 
