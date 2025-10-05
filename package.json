@@ -10,11 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "aframe": "^1.7.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
-  },  
+  },
   "engines": {
-   "node": ">=22.0.0"
+    "node": ">=22.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
