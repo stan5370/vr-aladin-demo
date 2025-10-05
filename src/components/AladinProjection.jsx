@@ -1,3 +1,4 @@
+import "./colors.css";
 import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 
@@ -28,7 +29,7 @@ export default function AladinDome() {
 
     if (domeRef.current) {
       domeRef.current.material.map = texture;
-      domeRef.current.material.color = new THREE.Color(0.5, 0.5, 0.5);
+      domeRef.current.material.color = new THREE.Color(0.3, 0.3, 0.3);
       domeRef.current.material.opacity = 0.75;
       domeRef.current.material.transparent = true;
       domeRef.current.material.needsUpdate = true;
@@ -44,7 +45,7 @@ export default function AladinDome() {
 
   return (
     <mesh ref={domeRef}>
-      <sphereGeometry args={[2000, 64, 64, 0, Math.PI * 2, 0]} />
+      <sphereGeometry args={[1500, 128, 64, 0, Math.PI * 2, 0]} />
       <meshBasicMaterial side={THREE.BackSide} color="black"/>
     </mesh>
   );
