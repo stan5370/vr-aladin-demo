@@ -1,4 +1,3 @@
-import "./colors.css";
 import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 

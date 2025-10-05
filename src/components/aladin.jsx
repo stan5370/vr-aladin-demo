@@ -22,7 +22,7 @@ export default function Aladin() {
                 fullScreen: true,
                 showSimbadPointerControl: true,
                 showReticle: false,
-                fov: 60,
+                fov: 90,
             });
             aladin.addCatalog(catalog);
             aladinRef.current = aladin;
