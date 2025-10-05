@@ -6,6 +6,23 @@ export default function Aladin(props) {
   const { height, width } = useWindowDimensions();
 
   useEffect(() => {
+    const loadAladin = () => {
+      // Initialize Aladin Lite
+      const catalog = window.A.catalogHiPS("https://hipscat.cds.unistra.fr/HiPSCatService/Simbad", {
+        onClick: (source) => {
+          console.log("Clicked source:", source);
+        },
+      });
+      const aladin = window.A.aladin(aladinRef.current, props);
+
+      // Load HiPS catalogue
+
+      // Add catalog to Aladin
+      aladin.addCatalog(catalog);
+
+      return aladin;
+    };
+
     // Load Aladin script dynamically if not already loaded
     const existingScript = document.getElementById("aladin-script");
 
@@ -18,19 +35,14 @@ export default function Aladin(props) {
 
       script.onload = () => {
         if (window.A) {
-          window.A.init.then(() => {
-            window.A.aladin(aladinRef.current, props);
-          });
+          window.A.init.then(loadAladin);
         }
       };
 
       document.body.appendChild(script);
     } else {
-      // If already loaded, just init
       if (window.A) {
-        window.A.init.then(() => {
-          window.A.aladin(aladinRef.current, props);
-        });
+        window.A.init.then(loadAladin);
       }
     }
   }, [props]);
