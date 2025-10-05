@@ -29,7 +29,7 @@ export default function AladinDome() {
     if (domeRef.current) {
       domeRef.current.material.map = texture;
       domeRef.current.material.color = new THREE.Color(0.3, 0.3, 0.3);
-      domeRef.current.material.opacity = 0.75;
+      domeRef.current.material.opacity = 100;
       domeRef.current.material.transparent = true;
       domeRef.current.material.needsUpdate = true;
     }
@@ -43,7 +43,7 @@ export default function AladinDome() {
   }, [canvas]);
 
   return (
-    <mesh onClick={(e) => {
+    <mesh onClick={async (e) => {
       
       console.log("Clicked Mesh");
 
@@ -59,6 +59,27 @@ export default function AladinDome() {
 
       aladin.gotoObject(raDec); // TODO: make this work
       console.log(aladin.getRaDec());
+
+
+
+      // console.log("RA:", source.data.ra_sexa);
+      // console.log("Declination:", source.data.dec_sexa);
+
+      // const prefix = "http://localhost:7071/api/";
+
+      // let params = new URLSearchParams({ RA: source.data.ra_sexa, Declination: source.data.dec_sexa});
+      // let url = prefix + `coordsToName?${params.toString()}`;
+
+      // let res = await fetch(url);
+      // let text = await res.text();
+      // console.log(text);
+
+      // params = new URLSearchParams({prompt: text});
+      // url = prefix + `namesToDesc?${params.toString()}`;
+      // res = await fetch(url);
+      // let description = await res.text();
+      // console.log(description);
+
     }} ref={domeRef}>
       <sphereGeometry args={[1500, 128, 64, 0, Math.PI * 2, 0]} />
       <meshBasicMaterial side={THREE.BackSide} color="black" />

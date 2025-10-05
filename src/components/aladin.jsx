@@ -7,31 +7,6 @@ export default function Aladin() {
 
     useEffect(() => {
         const loadAladin = () => {
-            // Initialize catalog
-            const catalog = window.A.catalogHiPS("https://hipscat.cds.unistra.fr/HiPSCatService/Simbad", {
-                onClick: async (source) => {
-                    console.log("RA:", source.data.ra_sexa);
-                    console.log("Declination:", source.data.dec_sexa);
-
-                    const prefix = "http://localhost:7071/api/";
-
-                    let params = new URLSearchParams({ RA: source.data.ra_sexa, Declination: source.data.dec_sexa});
-                    let url = prefix + `coordsToName?${params.toString()}`;
-
-                    let res = await fetch(url);
-                    let text = await res.text();
-                    console.log(text);
-
-                    params = new URLSearchParams({prompt: text});
-                    url = prefix + `namesToDesc?${params.toString()}`;
-                    res = await fetch(url);
-                    let description = await res.text();
-                    console.log(description);
-
-
-                },
-            });
-
             // Create aladin
             window.aladin = window.A.aladin('#aladin-lite-div', {
                 target: "18 03 57.94 -28 40 55.0",
@@ -42,7 +17,6 @@ export default function Aladin() {
                 showReticle: false,
                 fov: 105,
             });
-            window.aladin.addCatalog(catalog);
             aladinRef.current = window.aladin;
         };
 
