@@ -19,7 +19,7 @@ function App() {
       >
         <XR store={store}>
           <PerspectiveCamera makeDefault position={[0, 1.6, 2]} fov={60} />
-          <Environment preset="warehouse" />
+          <Environment preset="night" />
           <AladinDome />
           <mesh rotation-x={-Math.PI / 2}>
             <circleGeometry args={[2.5, 32]} />

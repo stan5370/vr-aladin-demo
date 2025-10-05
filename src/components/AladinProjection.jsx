@@ -6,7 +6,7 @@ export default function AladinDome() {
   const [canvas, setCanvas] = useState(null);
   const textureRef = useRef();
 
-  // 1️⃣ Grab the Aladin canvas dynamically from the DOM
+  // Grab the Aladin canvas dynamically from the DOM
   useEffect(() => {
     const checkCanvas = () => {
       const c = document.querySelector("#aladin-lite-div canvas");
@@ -16,7 +16,7 @@ export default function AladinDome() {
     checkCanvas();
   }, []);
 
-  // 2️⃣ Create a Three.js texture once we have the canvas
+  // Create Three.js texture once we have the canvas
   useEffect(() => {
     if (!canvas) return;
 
@@ -28,20 +28,23 @@ export default function AladinDome() {
 
     if (domeRef.current) {
       domeRef.current.material.map = texture;
+      domeRef.current.material.color = new THREE.Color(0.8, 0.8, 0.8);
+      domeRef.current.material.opacity = 0.75;
+      domeRef.current.material.transparent = true;
       domeRef.current.material.needsUpdate = true;
     }
 
-    // 3️⃣ Update texture every 1 second
+    // Update texture every 1 second
     const interval = setInterval(() => {
       if (textureRef.current) textureRef.current.needsUpdate = true;
-    }, 1000); // 1000 ms = 1 update per second
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [canvas]);
 
   return (
     <mesh ref={domeRef}>
-      <sphereGeometry args={[5000, 64, 64, 0, Math.PI * 2, 0]} />
+      <sphereGeometry args={[2000, 64, 64, 0, Math.PI * 2, 0]} />
       <meshBasicMaterial side={THREE.BackSide} />
     </mesh>
   );
