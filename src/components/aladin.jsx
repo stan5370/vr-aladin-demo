@@ -86,25 +86,6 @@ async function readElasticStream(resp) {
   return extractTextFromSSE(sseBuffer);
 }
 
-function formatMessageWithLineBreaks(text, maxChars = 100) {
-  const words = text.split(" ");
-  let line = "";
-  const lines = [];
-
-  words.forEach(word => {
-    // If adding the next word exceeds maxChars, push the line and start a new one
-    if ((line + word).length > maxChars) {
-      lines.push(line.trim());
-      line = "";
-    }
-    line += word + " ";
-  });
-
-  if (line) lines.push(line.trim()); // push the last line
-
-  return lines.join("<br>");
-}
-
 export default function Aladin() {
   const aladinRef = useRef(null);
 
