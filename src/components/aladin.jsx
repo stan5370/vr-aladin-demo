@@ -154,7 +154,7 @@ export default function Aladin() {
 
         let llmText = "";
         try {
-          const prefix = "http://localhost:443/api/";
+          const prefix = "http://nusolar-backend-bkbkb0cfemage5f9.canadacentral-01.azurewebsites.net/api/";
           const params = new URLSearchParams({ RA: raSexa, Declination: decSexa });
           const url = `${prefix}namesToDesc?${params.toString()}`;
 
