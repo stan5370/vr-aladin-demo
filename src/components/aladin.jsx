@@ -1,22 +1,21 @@
 import { useEffect, useRef } from "react";
 import useWindowDimensions from "./windowDimensions";
-import { Html } from '@react-three/drei'
 
 export default function Aladin(props) {
-  const aladinRef = useRef(null);
+  const aladinRef = useRef();
   const { height, width } = useWindowDimensions();
 
   useEffect(() => {
     const loadAladin = () => {
-      // Initialize Aladin Lite
+      // Initialize catalog
       const catalog = window.A.catalogHiPS("https://hipscat.cds.unistra.fr/HiPSCatService/Simbad", {
         onClick: (source) => {
           console.log("Clicked source:", source);
         },
       });
-      const aladin = window.A.aladin(aladinRef.current, props);
 
-      // Add catalog to Aladin
+      // Create aladin
+      const aladin = window.A.aladin(aladinRef.current, {...props});
       aladin.addCatalog(catalog);
 
       return aladin;
@@ -47,9 +46,7 @@ export default function Aladin(props) {
   }, [props]);
 
   return (
-    <Html>
-      <div id="aladin-lite-div" style={{ width: width, height: height }} />
-    </Html>
+    <div ref={aladinRef} id="aladin-lite-div" style={{ width: width, height: height }} />
   );
 }
 
