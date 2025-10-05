@@ -21,6 +21,25 @@ function toDMS(decDeg) {
   return `${sign}${pad(dd)} ${pad(mm)} ${ss.toFixed(2).padStart(5, "0")}`;
 }
 
+function formatMessageWithLineBreaks(text, maxChars = 100) {
+  const words = text.split(" ");
+  let line = "";
+  const lines = [];
+
+  words.forEach(word => {
+    // If adding the next word exceeds maxChars, push the line and start a new one
+    if ((line + word).length > maxChars) {
+      lines.push(line.trim());
+      line = "";
+    }
+    line += word + " ";
+  });
+
+  if (line) lines.push(line.trim()); // push the last line
+
+  return lines.join("<br>");
+}
+
 export default function Aladin() {
   const aladinRef = useRef(null);
 
@@ -54,69 +73,66 @@ export default function Aladin() {
       // Click anywhere on the sky view (but ignore UI controls) → get RA/Dec
       const container = document.getElementById("aladin-lite-div");
 
-      const handleClick = async (e) => {
-        // Bail if you clicked on any Aladin UI control/button
-        if (
-          e.target.closest(".aladin-control") ||
-          e.target.closest(".aladin-control-top") ||
-          e.target.closest(".aladin-control-bottom") ||
-          e.target.closest(".aladin-btn") ||
-          e.target.closest(".aladin-toolbar")
-        ) {
-          return;
-        }
+const handleClick = async (e) => {
+  // Ignore UI controls
+  if (
+    e.target.closest(".aladin-control") ||
+    e.target.closest(".aladin-control-top") ||
+    e.target.closest(".aladin-control-bottom") ||
+    e.target.closest(".aladin-btn") ||
+    e.target.closest(".aladin-toolbar")
+  ) {
+    return;
+  }
 
-        // Pixel → world coordinates (degrees)
-        const rect = container.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+    // Pixel → world coordinates
+    const rect = container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-        // Some versions nest canvases; use the API conversion if available:
-        const [raDeg, decDeg] = aladin.pix2world(x, y) || [];
+    const [raDeg, decDeg] = aladin.pix2world(x, y) || [];
+    if (typeof raDeg !== "number" || typeof decDeg !== "number") return;
 
-        if (typeof raDeg !== "number" || typeof decDeg !== "number") {
-          console.warn("Could not resolve sky coordinates for click.");
-          return;
-        }
+    const raSexa = toHMS(raDeg);
+    const decSexa = toDMS(decDeg);
 
-        const raSexa = toHMS(raDeg);
-        const decSexa = toDMS(decDeg);
-        
-        aladin.addStatusBarMessage({
-          id: "loadingMsg",
-          duration: 10000,
-          type: 'loading',
-          message: 'Clicked: ' + raSexa + ' ' + decSexa
-        });
-        console.log("Clicked sky coords:", raSexa, decSexa);
+    // Center / zoom Aladin to the clicked coordinates
+    aladin.gotoRaDec(raDeg, decDeg, aladin.getFov()); // keeps current FOV
+    // Or use aladin.gotoRaDec(raDeg, decDeg, 10) to zoom in to FOV=10 deg
 
-        try {
-          const prefix = "https://localhost:7071/api/";
-          const params = new URLSearchParams({ RA: raSexa, Declination: decSexa });
-          const url = `${prefix}namesToDesc?${params.toString()}`;
+    // Add a loading message
+    aladin.addStatusBarMessage({
+      id: "loadingMsg",
+      duration: 10000,
+      type: "loading",
+      message: `Clicked: ${raSexa} ${decSexa}`
+    });
 
-          const res = await fetch(url);
-          const description = await res.text();
+    try {
+      const prefix = "https://localhost:7071/api/";
+      const params = new URLSearchParams({ RA: raSexa, Declination: decSexa });
+      const url = `${prefix}namesToDesc?${params.toString()}`;
 
-          console.log("namesToDesc:", description);
-        
-          aladin.removeStatusBarMessage("message");
-          aladin.removeStatusBarMessage("loadingMsg");
+      const res = await fetch(url);
+      const description = await res.text();
 
-          const formatted = description.replace(/(.{100})/g, "$1<br>");
+      // Format message nicely
+      const formatted = formatMessageWithLineBreaks(description, 100);
 
-          aladin.addStatusBarMessage({
-            id: "message",
-            duration: 10000,
-            type: 'info',
-            message: formatted
-          })
+      // Remove loading message but **keep previous info messages if needed**
+      aladin.removeStatusBarMessage("loadingMsg");
 
+      aladin.addStatusBarMessage({
+	id: "message",
+	duration: 10000,
+	type: "info",
+	message: formatted
+      });
 
-        } catch (err) {
-          console.error("namesToDesc fetch failed:", err);
-        }
-      };
+    } catch (err) {
+      console.error("namesToDesc fetch failed:", err);
+    }
+  };
 
       container.addEventListener("contextmenu", handleClick);
       aladinRef.current = { aladin, handleClick, container };
