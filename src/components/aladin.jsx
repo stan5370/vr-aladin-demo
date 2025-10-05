@@ -173,14 +173,9 @@ export default function Aladin() {
 
         let llmText = "";
         try {
-          // 1) Try streaming first
-          const resp = await fetch(streamUrl, {
-            method: "POST",
-            mode: "cors",
-            headers: { ...commonHeaders, "Accept": "text/event-stream" },
-            body: JSON.stringify({ messages }),
-            signal: ac.signal
-          });
+          const prefix = "http://localhost:443/api/";
+          const params = new URLSearchParams({ RA: raSexa, Declination: decSexa });
+          const url = `${prefix}namesToDesc?${params.toString()}`;
 
           if (!resp.ok) {
             const errText = await resp.text().catch(() => "");
@@ -248,11 +243,9 @@ export default function Aladin() {
         });
       };
 
-      container.addEventListener("contextmenu", handleContextMenu);
-      aladinRef.current = {
-        aladin,
-        cleanup: () => container.removeEventListener("contextmenu", handleContextMenu)
-      };
+      container.addEventListener("contextmenu", handleClick);
+      container.addEventListener("touchstart", handleClick);
+      aladinRef.current = { aladin, handleClick, container };
     };
 
     // Load Aladin Lite script once, then init
