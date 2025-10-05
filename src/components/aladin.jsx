@@ -23,16 +23,8 @@ function toDMS(decDeg) {
 
 export default function Aladin() {
   const aladinRef = useRef(null);
-
-  useEffect(() => {
-    // Wait for ref to be ready
-    if (aladinRef.current) {
-      setIsReady(true);
-    }
-  }, []);
   
   useEffect(() => {
-    if (!isReady) return;
     
     const loadAladin = () => {
       // Create Aladin
