@@ -44,10 +44,14 @@ export default function AladinDome() {
 
   return (
     <mesh onClick={(e) => {
-        /* TODO: pass to aladin */
+      const x = e.intersection.uv.x * canvas.width;
+      const y = e.intersection.uv.y * canvas.height;
+      const raDec = aladin.pix2world(x, y); // TODO: make this work
+      aladin.gotoObject(raDec); // TODO: make this work
+      console.log(raDec);
     }} ref={domeRef}>
       <sphereGeometry args={[1500, 128, 64, 0, Math.PI * 2, 0]} />
-      <meshBasicMaterial side={THREE.BackSide} color="black"/>
+      <meshBasicMaterial side={THREE.BackSide} color="black" />
     </mesh>
   );
 }
