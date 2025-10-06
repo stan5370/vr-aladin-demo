@@ -136,71 +136,23 @@ export default function Aladin() {
           type: "loading",
           message: "Querying for: " + raSexa + " " + decSexa
         });
-
-        // Build URLs/body
-        const base = ELASTIC_NODE.replace(/\/+$/, "");
-        const streamUrl = `${base}/_inference/chat_completion/${encodeURIComponent(ELASTIC_LLM_ID)}/_stream`;
-        const nonStreamUrl = `${base}/_inference/chat_completion/${encodeURIComponent(ELASTIC_LLM_ID)}`;
-        const messages = buildMessages(`${raSexa} ${decSexa}`);
-
-        // 10s timeout
-        const ac = new AbortController();
-        const timeout = setTimeout(() => ac.abort("timeout"), 10000);
-
-        const commonHeaders = {
-          "Content-Type": "application/json",
-          "Authorization": `ApiKey ${ELASTIC_API_KEY}`,
-        };
-
+        
         let llmText = "";
+
         try {
-          const prefix = "http://nusolar-backend-bkbkb0cfemage5f9.canadacentral-01.azurewebsites.net/https://vr-aladin-demo-backend-emd5e0g0agebbcer.canadacentral-01.azurewebsites.net/api/";
+          const prefix = "http://nusolar-backend-bkbkb0cfemage5f9.canadacentral-01.azurewebsites.net/";
           const params = new URLSearchParams({ RA: raSexa, Declination: decSexa });
           const url = `${prefix}namesToDesc?${params.toString()}`;
 
-          if (!resp.ok) {
-            const errText = await resp.text().catch(() => "");
-            throw new Error(`stream HTTP ${resp.status} ${resp.statusText}\n${errText}`);
-          }
+          const res = await fetch(url);
+          llmText = await res.text();
 
-          llmText = await readElasticStream(resp);
-        } catch (streamErr) {
-          console.warn("Stream failed, falling back to non-stream:", streamErr);
+          console.log("namesToDesc:", llmText);
 
-          // 2) Fallback: non-streaming JSON
-          try {
-            const resp2 = await fetch(nonStreamUrl, {
-              method: "POST",
-              mode: "cors",
-              headers: { ...commonHeaders, "Accept": "application/json" },
-              body: JSON.stringify({ messages }),
-              signal: ac.signal
-            });
-
-            if (!resp2.ok) {
-              const body = await resp2.text().catch(() => "");
-              throw new Error(`non-stream HTTP ${resp2.status} ${resp2.statusText}\n${body}`);
-            }
-
-            const data = await resp2.json();
-            const cc = data.chat_completion ?? data;
-            llmText =
-              cc?.choices?.[0]?.message?.content ??
-              cc?.choices?.[0]?.delta?.content ??
-              "";
-          } catch (nonStreamErr) {
-            clearTimeout(timeout);
-            aladin.removeStatusBarMessage("loadingMsg");
-            aladin.addStatusBarMessage({
-              id: "message",
-              duration: 15000,
-              type: "warning",
-              message: `Elastic error:\n${String(nonStreamErr?.message || nonStreamErr)}`
-            });
-            return;
-          }
+        } catch (err) {
+          console.error("namesToDesc fetch failed:", err);
         }
-
+        
         clearTimeout(timeout);
 
         // Try to parse model's stringified JSON; else show raw text
