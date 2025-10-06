@@ -140,7 +140,7 @@ export default function Aladin() {
         let llmText = "";
 
         try {
-          const prefix = "http://nusolar-backend-bkbkb0cfemage5f9.canadacentral-01.azurewebsites.net/";
+          const prefix = "https://vr-aladin-demo-backend-emd5e0g0agebbcer.canadacentral-01.azurewebsites.net/api/";
           const params = new URLSearchParams({ RA: raSexa, Declination: decSexa });
           const url = `${prefix}namesToDesc?${params.toString()}`;
 
@@ -152,14 +152,12 @@ export default function Aladin() {
         } catch (err) {
           console.error("namesToDesc fetch failed:", err);
         }
-        
-        clearTimeout(timeout);
 
         // Try to parse model's stringified JSON; else show raw text
         let pretty = llmText;
         try {
           const parsed = JSON.parse(llmText);
-          pretty = parsed.starDescription || JSON.stringify(parsed);
+          pretty = parsed.data.llmResponse || JSON.stringify(parsed);
         } catch {
           // keep as text
         }
